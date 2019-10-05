@@ -1,0 +1,96 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1348\cocoasubrtf170
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww11980\viewh11020\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 April 12, 2019\
+\
+Comparing simulated data with experimental data for straight line walk for torso angle at 50 degree\
+\
+Step 1: First run main.m to generate sim_data.mat\
+\
+Step 2: Next run plotTestData_pab.m\
+This runs the file plotSimData.m (simulated data) and does experimental plots (this file)\
+The file plotSimData.m needs sim_data.mat that comes from simulations (step 1 here)\
+\
+\
+\
+%%%%%%%%%\
+\
+The columns are\
+\
+1 time \
+2 pitch\
+3 setpoint\
+4 O drive Current\
+5 Pitch Rate\
+6 \
+7 Absolute Velocity\
+8 Absolute position\
+9 Bus Voltage\
+10 Bus Current\
+\
+\
+Data to show\
+1) Velocity vs time (7) \
+2) Absolute position vs time\
+3) Current versus time\
+\
+\
+%%%%%%%%%\
+\pard\pardeftab720
+
+\f1 \cf0 \expnd0\expndtw0\kerning0
+['curr_time'], ['feedback'], ['angle_cnt'], ['mapped_out'], ['pitchrate'], ['m1pos_deg'], ['m1speed'], ['m1beta'], ['vbus'], ['m1curr'], ['m0pos_deg'],['m0speed']
+\f0 \expnd0\expndtw0\kerning0
+\
+
+\f1 \expnd0\expndtw0\kerning0
+\
+current time
+\f0 \expnd0\expndtw0\kerning0
+\
+
+\f1 \expnd0\expndtw0\kerning0
+feedback = what it reading from the imu in degrees
+\f0 \expnd0\expndtw0\kerning0
+\
+
+\f1 \expnd0\expndtw0\kerning0
+angle_cnt = PID setpoint in degrees
+\f0 \expnd0\expndtw0\kerning0
+\
+
+\f1 \expnd0\expndtw0\kerning0
+mapped_out = PID output in amps (what the ODrive takes as a desired current)
+\f0 \expnd0\expndtw0\kerning0
+\
+
+\f1 \expnd0\expndtw0\kerning0
+pitchrate = degrees/s
+\f0 \expnd0\expndtw0\kerning0
+\
+
+\f1 \expnd0\expndtw0\kerning0
+m1pos_deg
+\f0 \expnd0\expndtw0\kerning0
+\
+
+\f1 \expnd0\expndtw0\kerning0
+...
+\f0 \expnd0\expndtw0\kerning0
+\
+
+\f1 \expnd0\expndtw0\kerning0
+vbus = bus voltage on ODrive = battery voltage
+\f0 \expnd0\expndtw0\kerning0
+\
+
+\f1 \expnd0\expndtw0\kerning0
+m1 curr = current seen by motor1 (NOT a reliable value; includes imaginary current \{the current has real and imaginary parts\})\
+\
+power = column 10 * column 9\
+O drive current is 4\
+m1speed\
+}
