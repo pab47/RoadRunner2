@@ -1,0 +1,144 @@
+#!/usr/bin/bash
+sudo apt update
+sudo apt upgrade -y
+
+# Install vim --------------------------------------------------
+sudo apt install vim -y
+
+# Install vncserver --------------------------------------------
+sudo apt install realvnc-vnc-server realvnc-vnc-viewer -y
+
+# Install ftp --------------------------------------------------
+sudo apt install pure-ftpd -y
+
+# Install drivers for PS3 controller ---------------------------
+sudo apt install libusb-dev joystick python-pygame -y
+
+cd ~
+wget http://www.pabr.org/sixlinux/sixpair.c
+gcc -o sixpair sixpair.c -lusb
+
+sudo reboot now
+
+# Connect controller then run
+
+sudo ~/sixpair
+
+# Connect to the controller graphically
+
+# Driver version is 2.1.0.
+# Joystick (PLAYSTATION(R)3 Controller) has 6 axes (X, Y, Z, Rx, Ry, Rz)
+# and 17 buttons (BtnA, BtnB, BtnX, BtnY, BtnTL, BtnTR, BtnTL2, BtnTR2, BtnSelect, BtnStart, BtnMode, BtnThumbL, BtnThumbR, (null), (null), (null), (null)).
+# Testing ... (interrupt to exit)
+# Axes:  0:     0  1:     0  2:-32767  3:     0  4:     0  5:-32767 Buttons:  0:off  1:off  2:off  3:off  4:off  5:off  6:off  7:off  8:off  9:off 10:off 11:off 12:off 13:off 14:off 15:off 16:off
+
+# Turn off bluetooth from command line - else wont reconnect?
+# sudo hciconfig hci0 down
+sudo service bluetooth stop
+sudo service bluetooth restart
+
+# Install PWM Bonnet library -----------------------------------
+sudo apt install python-smbus
+sudo apt install i2c-tools
+# sudo apt install -y git build-essential python-dev
+cd ~
+git clone https://github.com/adafruit/Adafruit_Python_PCA9685.git
+cd Adafruit_Python_PCA9685
+sudo python setup.py install
+
+# Install Gyro-Fusion library ----------------------------------
+cd ~
+git clone https://github.com/adafruit/Adafruit_Python_BNO055.git
+cd Adafruit_Python_BNO055
+sudo python setup.py install
+
+# Install system monitor ---------------------------------------
+sudo apt install gnome-system-monitor -y
+
+# Install PID lib ----------------------------------------------
+copy the library from PID folder
+
+# Install ODRive software
+# Install Python3
+sudo apt install python3?
+pip install odrive
+
+echo 'SUBSYSTEM=="usb", ATTR{idVendor}=="1209", ATTR{idProduct}=="0d[0-9][0-9]", MODE="0666"' | sudo tee /etc/udev/rules.d/91-odrive.rules
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+
+
+# Install Access Point Software --------------------------------
+sudo apt install dnsmasq hostapd
+
+# Turn off the software bc config files not ready
+sudo systemctl stop dnsmasq
+sudo systemctl stop hostapd
+
+# Edit the dhcpcd config file to set a static IP address
+sudo nano /etc/dhcpcd.conf
+
+# Append/change the following to the file
+interface wlan0
+	static ip_address=192.168.4.1/24
+	nohook wpa_supplicant
+
+#  Restart the dhcpcd daemon 	
+sudo service dhcpcd restart
+
+# Rename the dnsmasq config file and edit a new one
+sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig  
+sudo nano /etc/dnsmasq.conf
+
+# Copy the following into the open file and save it
+interface=wlan0      # Use the require wireless interface - usually wlan0
+  dhcp-range=192.168.4.2,192.168.4.20,255.255.255.0,24h
+
+# Edit the hostapd config file
+sudo nano /etc/hostapd/hostapd.conf
+
+# Add the following to the config file
+interface=wlan0
+driver=nl80211
+ssid=RoadrunnerPiWifi
+hw_mode=g
+channel=7
+wmm_enabled=0
+macaddr_acl=0
+auth_algs=1
+ignore_broadcast_ssid=0
+wpa=2
+wpa_passphrase=roadrunnerpi
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=TKIP
+rsn_pairwise=CCMP
+
+# Tell the system where to find this config file
+sudo nano /etc/default/hostapd
+
+# Find the line with #DAEMON_CONF and replace with this
+DAEMON_CONF="/etc/hostapd/hostapd.conf"
+
+# Start up the remaining services
+sudo systemctl start hostapd
+sudo systemctl start dnsmasq
+
+# Add routing and masquerade
+# Edit /etc/sysctl.conf and uncomment this line
+net.ipv4.ip_forward=1
+
+# Add a masquerade for outbound traffic on eth0
+sudo iptables -t nat -A  POSTROUTING -o eth0 -j MASQUERADE
+
+# Save the iptables rule
+sudo sh -c "iptables-save > /etc/iptables.ipv4.nat"
+
+# Edit /etc/rc.local and add this just above "exit 0" to install these rules on boot.
+iptables-restore < /etc/iptables.ipv4.nat
+
+# Reboot
+sudo reboot now
+
+# More info in the link below
+# https://www.raspberrypi.org/documentation/configuration/wireless/access-point.md
+
