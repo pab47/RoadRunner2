@@ -6,4 +6,6 @@ Simulation
     
 Code
   Contains Arduino code library and Pi code 
-
+  
+Mechanical Design
+  Contains solid works files of the different sub-assemblies of the robot.
